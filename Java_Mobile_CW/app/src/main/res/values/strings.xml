@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">PART2 Shopping List</string>
+    <string name="add_product">Add Product</string>
+    <string name="hint_product">Product Name...</string>
+    <string name="hint_quantity">Enter Quantity</string>
+    <string name="hint_spinner">Select Unit</string>
+    <string name="add_product_button">Add</string>
+    <string name="delete_list">Delete List?</string>
+    <string name="hint_list">List name</string>
+    <string name="button_save">Create</string>
+    <string name="button_image">Select Image</string>
+    <string name="list_image">Image of List</string>
+    <string name="add_shop">Add Shopping List</string>
+    <string name="Error">Issue Adding List</string>
+    <string name="productError">Product Already Exists</string>
+    <string name="main_title">Shopping Lists</string>
+    <string name="no_lists">You currently have no shopping lists</string>
+    <string name="no_products">You currently have no products in your list.</string>
+    <string name="fab_add_product">Add Product Button</string>
+    <string name="product_title">Products</string>
+    <string name="update_product_button">Save</string>
+    <string name="add">Add</string>
+    <string name="subtract">Subtract</string>
+
+    <string-array name="labels_unit">
+        <item>Kg</item>
+        <item>Unit</item>
+        <item>Liter</item>
+    </string-array>
+</resources>

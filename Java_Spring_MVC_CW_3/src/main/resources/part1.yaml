@@ -1,0 +1,747 @@
+openapi: 3.0.1
+info:
+  title: HW3 Part 1
+  description: CO2103 Semester 2 Coursework
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: 'Local Host server'
+
+tags:
+- name: Convenors
+  description: View, create and manage module convenors.
+- name: Modules
+  description: View, create and manage modules.
+- name: Sessions
+  description: View and delete module sessions.
+
+paths:
+  /convenors:
+    get:
+      summary: Returns a list of all convenors.
+      tags:
+        - Convenors
+      responses: 
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+  
+              
+
+        '204':
+          description: No Content, no Convenors in database.
+
+                    
+    post:
+      tags:
+        - Convenors
+      summary: Creates a new convenor.
+      requestBody:
+        $ref: '#/components/requestBodies/ConvenorBody'
+
+      responses:
+        '201':
+          description: Convenor Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "CREATED"
+                timestamp: "2022-04-06T19:41:02.2135196"
+                replyMessage: "Location: http://localhost:8080/convenors/12"
+          
+        '409':
+          description: Convenor already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "CONFLICT"
+                timestamp: "2022-04-06T19:48:42.3970515"
+                replyMessage: "Convenor with ID 3 already exists."
+          
+                    
+  /convenors/{id}:
+    get:
+      tags:
+      - Convenors
+      summary: Find a convenor by ID
+      description: Returns a single convenor
+      parameters:
+        - name: id
+          in: path
+          description: Id of the convenor to return.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully found requested convenor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+        '404':
+          $ref: '#/components/responses/Convenor404'
+              
+    put:
+      tags:
+       - Convenors
+      summary: Update a convenor by ID
+      description: Updates a single convenor
+      parameters:
+        - name: id
+          in: path
+          description: Id of the convenor to Update.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/ConvenorBody'
+      responses:
+        '200':
+          description: Convenor Updated Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+              examples:
+                full:
+                  $ref: '#/components/schemas/Convenor'
+                basic:
+                  value:
+                    id: '6'
+                    name: 'Richard'
+                    position: 'LECTURER'
+                    modules: []
+          
+        '400':
+          description: Invalid Data provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "BAD_REQUEST"
+                timestamp: "2022-04-06T20:08:08.6904751"
+                replyMessage: "PUT Request must contain Name and Position."
+        '404':
+          $ref: '#/components/responses/Convenor404'
+                
+    delete:
+      tags:
+        - Convenors
+      summary: Delete a convenor by ID
+      description: Deletes a single convenor
+      parameters:
+        - name: id
+          in: path
+          description: Id of the convenor to Delete.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Convenor Deleted Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "OK"
+                timestamp: "2022-04-06T20:10:05.6456337"
+                replyMessage: "Convenor with ID 6 deleted successfully."
+        
+        '404':
+          $ref: '#/components/responses/Convenor404'
+
+  /convenors/{id}/modules:
+    get:
+      tags:
+        - Convenors
+      summary: Get all Modules belonging to a Convenor.
+      description: Retrieves all Modules for a Convenor.
+      parameters:
+        - name: id
+          in: path
+          description: Id of the convenor to Delete.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '204':
+          description: 'No Content, Convenor has no Modules.'
+        
+        '404':
+          $ref: '#/components/responses/Convenor404'
+
+  /modules:
+    get:
+      tags:
+        - Modules
+      summary: Get full list of modules.
+      description: Returns a list of all modules.
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '204':
+          description: 'No Content, no Modules in database.'
+
+
+    post:
+      tags:
+        - Modules
+      summary: Create a new Module
+      description: Create a new Module
+      requestBody:
+        $ref: '#/components/requestBodies/ModuleBody'
+      responses:
+        '201':
+          description: Module Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "CREATED"
+                timestamp: "2022-04-06T19:41:02.2135196"
+                replyMessage: "Location: http://localhost:8080/modules/CO2104"
+          
+        '409':
+          description: Module already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "CONFLICT"
+                timestamp: "2022-04-06T19:48:42.3970515"
+                replyMessage: "Module CO2103 already exists."
+  
+  /modules/{code}:
+    get:
+      tags:
+        - Modules
+      summary: Find a Module by Code
+      description: Returns a single Module
+      parameters:
+        - name: code
+          in: path
+          description: Code of the Module to return.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully found requested Module.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '404':
+          $ref: '#/components/responses/Module404'
+
+
+    patch:
+      tags:
+        - Modules
+      summary: Patch Module by Code
+      description: Updates a single Module
+      parameters:
+        - name: code
+          in: path
+          description: Code of the Module to update.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/ModuleBody'
+      responses:
+        '200':
+          description: Convenor Updated Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '404':
+          $ref: '#/components/responses/Module404'
+                
+    delete:
+      tags:
+        - Modules
+      summary: Delete a Module by Code
+      description: Deletes a single Module
+      parameters:
+        - name: code
+          in: path
+          description: Code of the Module to Delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Module Deleted Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "OK"
+                timestamp: "2022-04-06T20:10:05.6456337"
+                replyMessage: "Module with Code CO2104 deleted successfully."
+        
+        '404':
+          $ref: '#/components/responses/Module404'
+
+  /modules/{code}/sessions:
+    post:
+      tags:
+      - Modules
+      parameters:
+          - name: code
+            in: path
+            description: Code of the Module to create a new session for.
+            required: true
+            schema:
+              type: string
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Session'
+      responses:
+        '201':
+          description: Session Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "CREATED"
+                timestamp: "2022-04-06T19:41:02.2135196"
+                replyMessage: "Location: http://localhost:8080/modules/CO2104/sessions/5"
+        
+        '404':
+          $ref: '#/components/responses/Module404'
+
+        '409':
+          description: Session already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "CONFLICT"
+                timestamp: "2022-04-06T19:48:42.3970515"
+                replyMessage: "Session 5 already exists."
+    get:
+      tags:
+       - Modules
+      parameters:
+        - name: code
+          in: path
+          description: Code of the Module to return a list of sessions.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '204':
+          description: 'No Content, no Sessions for Module.'
+        '404':
+          $ref: '#/components/responses/Module404'
+
+  /modules/{code}/sessions/{id}:
+    put:
+      tags:
+       - Modules
+      summary: Update a Modules Session by ID
+      description: Updates a single Session
+      parameters:
+        - name: code
+          in: path
+          description: Code of the Module to Update.
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: ID of session to update.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/SessionBody'
+      responses:
+        '200':
+          description: Convenor Updated Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+              example:
+                id: 8
+                topic: "Android Studio"
+                datetime: "2022-02-28T09:00:00.000+00:00"
+                duration: 2
+          
+        '400':
+          description: Invalid Data provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "BAD_REQUEST"
+                timestamp: "2022-04-06T20:08:08.6904751"
+                replyMessage: "PUT Request must contain all session elements, topic, datetime, and duration"
+        '404':
+          description: Either the Module or the Session was not found.
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Reply'
+              examples:
+                Session404:
+                  value:
+                    status: "NOT_FOUND"
+                    timestamp: "2022-04-06T19:23:40.8517702"
+                    replyMessage: "Session with ID 101 not found."
+                Module404:
+                  value:
+                    status: "NOT_FOUND"
+                    timestamp: "2022-04-06T19:23:40.8517702"
+                    replyMessage: "Module with Code CO1234 not found."
+
+    patch:
+      tags:
+        - Modules
+      summary: Patch Session of a Module by ID
+      description: Updates a single Session
+      parameters:
+        - name: code
+          in: path
+          description: Code of the Module to update.
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: ID of session to update.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/SessionBody'
+      responses:
+        '200':
+          description: Convenor Updated Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'          
+              example:
+                id: 8
+                topic: "Android Studio Updated"
+                datetime: "2022-02-28T09:00:00.000+00:00"
+                duration: 2
+        '404':
+          description: Either the Module or the Session was not found.
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Reply'
+              examples:
+                Session404:
+                  value:
+                    status: "NOT_FOUND"
+                    timestamp: "2022-04-06T19:23:40.8517702"
+                    replyMessage: "Session with ID 101 not found."
+                Module404:
+                  value:
+                    status: "NOT_FOUND"
+                    timestamp: "2022-04-06T19:23:40.8517702"
+                    replyMessage: "Module with Code CO1234 not found."
+
+
+  /sessions:
+    delete:
+      tags:
+        - Sessions
+      summary: Delete all sessions
+      description: Delete all sessions.
+      responses:
+        '200':
+          description: Sessions Deleted Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              example:
+                status: "OK"
+                timestamp: "2022-04-06T20:55:50.8435102"
+                replyMessage: "All sessions deleted."
+        '204':
+          description: No sessions found to delete.
+
+    get:
+      tags:
+        - Sessions
+      summary: Get all sessions or filter by Convenor and/or Module
+      description: Retrieve sessions and filter by Convenor and/or Module
+      parameters:
+        - in: query
+          name: convenor
+          required: false
+          schema:
+            type: integer
+            format: int64
+          description: Convenor ID
+        - in: query
+          name: module
+          description: Module code
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully found sessions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+
+        
+        '204':
+          description: All filters fine, no sessions found
+
+        '400':
+          description: Convenor doesn't teach filtered Module
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              examples:
+                Convenor404:
+                  value:
+                    status: "BAD_REQUEST"
+                    timestamp: "2022-04-06T19:23:40.8517702"
+                    replyMessage: "Convenor 3 does not teach Module CO3095"
+        
+        '404':
+          description: Convenor or Module not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+              examples:
+                Convenor404:
+                  value:
+                    status: "NOT_FOUND"
+                    timestamp: "2022-04-06T19:23:40.8517702"
+                    replyMessage: "Convenor with ID 200 not found."
+                Module404:
+                  value:
+                    status: "NOT_FOUND"
+                    timestamp: "2022-04-06T19:23:40.8517702"
+                    replyMessage: "Module with Code CO1234 not found."
+
+
+
+
+
+components:
+  schemas:
+      
+    Convenor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Convenor ID
+          example:
+            3
+        name:
+          type: string
+          description: The Convenor's name
+          example:
+            Kehinde Aruleba
+        position:
+          $ref: '#/components/schemas/Position'
+          description: The position of the Convenor.
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Module'
+
+            
+    Module:
+      type: object
+      properties:
+        code:
+          type: string
+          example:
+            CO3095
+        title:
+          type: string
+          example:
+            Software Quality
+        level:
+          type: integer
+          format: int32
+          example:
+            3
+        optional:
+          type: boolean
+          example:
+            True
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Session'
+        
+        
+          
+            
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        topic:
+          type: string
+        datetime:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          format: int64
+      example:
+        id: 
+          2
+        topic: 
+          Unit Testing
+        datetime: 
+          '2022-02-28T14:00:00.000+00:00'
+        duration: 
+          2
+      
+    Position:
+      type: string
+      enum: [GTA, LECTURER, PROFESSOR]
+      example:
+        LECTURER
+    
+    
+    Reply:
+      type: object
+      properties:
+        status:
+          type: string
+          format: httpstatus
+          default: "NOT_FOUND"
+        timestamp:
+          type: string
+          format: date-time
+        replyMessage:
+          type: string
+          default: "Resource not found"
+  
+  responses:
+    Convenor404:
+      description: No Convenor found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Reply'
+          example:
+            status: "NOT_FOUND"
+            timestamp: "2022-04-06T19:23:40.8517702"
+            replyMessage: "Convenor with ID 200 not found."
+
+    Module404:
+      description: No Module found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Reply'
+          example:
+            status: "NOT_FOUND"
+            timestamp: "2022-04-06T19:23:40.8517702"
+            replyMessage: "Module with Code CO1234 not found."
+
+
+          
+  requestBodies:
+    ConvenorBody:
+      description: A JSON object containing convenor information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Convenor'
+          examples:
+            basic:
+              value:
+                name: Jose
+                position: Professor
+            full:
+              $ref: '#/components/schemas/Convenor'
+
+    ModuleBody:
+      description: A JSON object containing Module information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Module'
+          examples:
+            basic:
+              value:
+                code: 'CO2104'
+                title: 'UI Design'
+                level: 2
+                optional: false
+            full:
+              $ref: '#/components/schemas/Module'
+
+    SessionBody:
+      description: A JSON object containing Session information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Session'
+          example:
+            topic: "Android Studio"
+            datetime: "2022-02-28T09:00:00.000+00:00"
+            duration: 2
